@@ -1,0 +1,63 @@
+<?php
+//declare variables for form data and set to empty
+//if $_SESSION variables set, assign values to variable
+$fName = $lName = $addr1 = $city = $st = $zip = $phone = $RegStartDate = $RegEndDate =  $VIN = "";
+//$sellerFName = $sellerLName = $sellerAddr = $sellerCity = $sellerSt = $vehicleType = $vin = "";
+// Add form fields here for new member information ****
+    print <<<END
+<head>
+<title>Title Transfer Application</title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+</head>
+<body>
+	<h2 style = "text-align:left">New Title Application </h2>
+	<h2 style = "text-align:left">Please provide the following information</h2>
+	<div align="left" style="width:600px;">
+		<form name = "codersclub" action = "newtitle.php" method = "post">
+			<p>
+				First Name: <input type="text" name="fName" value = "$fName" required/>
+			</p>
+			<p>
+				Last Name: <input type="text" name="lName" value = "$lName" required/>
+			</p>
+			<p>
+				Address Line 1: <input type="text" name="addr1" value = "$addr1" required/>
+			</p>
+			<p>
+		
+				City: <input type="text" name="city" value = "$city" required/>
+			</p>
+			<p>
+				State: <input type="text" name="st" value = "$st" required/>
+			</p>
+			<p>
+				Zip Code: <input type="text" name="zip" value = "$zip" required/>
+			</p>
+			<p>
+				VIN: <input type="text" name="VIN" value = "$VIN" required/>
+			</p>
+			<p>
+				 Phone:<input type="text" name="phone" value = "$phone" required/>
+			</p>
+			<p>
+				RegStartDate: <input type="date" name="RegStartDate" value = "$RegStartDate" required/>
+			</p>
+			<p>
+				RegEndDate: <input type="date" name="RegEndDate" value = "$RegEndDate" required/>
+
+				<input type="reset" name="reset" value="clear"/.>
+				&nbsp; &nbsp;
+				<input type="submit" name="submit" value="submit"/>
+			</p>
+		</form>
+	</div>
+		
+	</div>
+
+
+
+END;
+
+
+//end of form************************************ 	
+?>
