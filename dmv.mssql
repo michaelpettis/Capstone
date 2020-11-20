@@ -1,0 +1,182 @@
+drop database if exists dmv;
+
+#create a database, name it dmv
+
+create database dmv;
+use dmv;
+
+#create the six tables: owner, login, vehicle, registration, vehicle_ownership
+
+create table Owner (
+  ownerId int not null AUTO_INCREMENT,
+  fname varchar(30) not null,
+  lname varchar(30) not null,
+  addr char(20) not null,
+  city char(20) not null,
+  st char(2) not null,
+  zip char(10) not null,
+  ph char(12) not null, 
+  email varchar(100) not null,
+  dob date not null,
+  ssn char(4) not null,
+  pass varchar(100) not null,
+  primary key (ownerId)
+); 
+
+create table Employee (
+  empId int not null AUTO_INCREMENT,
+  fname varchar(30) not null,
+  lname varchar(30) not null,
+  addr char(20) not null,
+  city char(20) not null,
+  st char(2) not null,
+  zip char(10) not null,
+  ph char(12) not null, 
+  email varchar(100) not null,
+  dob date not null,
+  ssn char(4) not null,
+  pass varchar(100) not null,
+  primary key (empId)
+); 
+
+create table VehicleOwner (
+  vehicleOwnerId int not null,
+  ownerId int not null,
+  vin int not null,
+  startdate date not null,
+  enddate date not null,
+  constraint vehicle_ownership_pk primary key(vehicleOwnerId),
+  constraint vehicle_ownership_owner_fk foreign key(ownerId),
+	references owner(ownerId),
+  constraint vehicle_ownership_vehicle_fk foreign key(vin)
+	references vehicle(vin)
+);
+
+create table RegisterVehicle (
+  regVehicleId int not null AUTO_INCREMENT,
+  ownerId int not null,
+  vin char(17) NOT NULL,
+  make char(20) NOT NUll,
+  model char(20) NOT NULL,
+  modelyear char(4) NOT NULL,
+  mileage int(10) NOT NULL,
+  newused char(10) NOT NULL,
+  color char(15) NOT NULL,
+  trim char(10) NOT NULL,
+  license_plate char(7) NOT NULL,
+  vehicle_classification varchar(100) NOT NULL,
+  check_insurance char(10) NOT NULL,
+  primary key(regVehicleId)
+);
+
+create table NewTitle (
+  newTitleId int not null AUTO_INCREMENT,
+  ownerId int not null,
+  fname varchar(30) not null,
+  lname varchar(30) not null,
+  addr char(20) not null,
+  city char(20) not null,
+  st char(2) not null,
+  zip char(10) not null,
+  vin char(17) not null,
+  ph char(12) not null,
+  primary key (newTitleId)
+);
+
+create table TransferTitleRecords (
+  transferTitleId int not null AUTO_INCREMENT,
+  ownerId int not null,
+  SellerFullName varchar(20) NOT NULL,
+  SellerAddress varchar(20) NOT NULL,
+  SellerCity text NOT NULL,
+  SellerSt text NOT NULL,
+  SellerZip int(20) NOT NULL,
+  BuyerFullName varchar(20) NOT NULL,
+  BuyerAddress varchar(20) NOT NULL,
+  BuyerCity text NOT NULL,
+  BuyerSt text NOT NULL,
+  BuyerZip int(20) NOT NULL,
+  DateOfSale date NOT NULL,
+  AmountOfSale int(10) NOT NULL,
+  Mileage int(6) NOT NULL,
+  Make varchar(20) NOT NULL,
+  Model varchar(20) NOT NULL,
+  Year int(4) NOT NULL,
+  Color text NOT NULL,
+  VehicleClassification varchar(20) NOT NULL,
+  VIN int(120) NOT NULL,
+  primary key (transferTitleId)
+)  
+ 
+create table Registration (
+  regId int not null,
+  ownerId int not null,
+  vin char(17) not null,
+  insurance char(1) not null, 
+  constraint registration_pk primary key (regId),
+  constraint registration_owner_fk foreign key(ownerid)
+	references owner(ownerid),
+  constraint registration_vehicle_fk foreign key(vin)
+	references vehicle(vin)
+);
+
+
+
+/*employee search data of an owner*/
+create table ownerData (
+  ownerId int not null,
+  fname,
+  lname,
+  vehicleOwnerId int not null,
+  regVehicleId int,
+  newTitleId int,
+  transferTitleId int,
+);
+
+create trigger
+
+
+/*
+create table vehicle(
+vin char(17) not null,
+make varchar(15) not null,
+model varchar(15) not null,
+year char(4) not null,
+color char(10) not null,
+trim char(10) not null,
+plate char(8) null,
+vehicleclassification char(10) not null,
+primary key (vin)
+);
+*/
+
+/*create table payment (
+paymentid int not null,
+regid int not null,
+paymentdate date not null,
+paymenttype char(6) not null,
+amount decimal(9,2) not null,
+constraint payment_pk primary key(paymentid),
+constraint payment_registration_fk foreign key(regid)
+	references registration(regid)
+);*/
+
+/*create table login (
+uname char(30) not null,
+ownerid int not null,
+password char(30) not null,
+constraint login_pk primary key (uname),
+constraint login_owner foreign key (ownerid)
+	references owner(ownerid)
+);*/
+
+INSERT INTO `owner` (`OwnerID`, `fname`, `lname`, `addr`, `city`, `st`, `zip`, `ph`, `email`, `dob`, `ssn`, `pass`) VALUES
+  (1,'Bob','Smith','123 Main','Lawrence','KS','66045','785-123-3345','BSMITH@GMAIL.COM','1985-11-20','1234','9507345d13e61557ea4c6a3b1be56806'),
+  (2,'Sam','Cook','345 So 46th','Topeka','KS','66604','785-223-1536','SJONES@GMAIL.COM','1990-05-05','5456','26253c50741faa9c2e2b836773c69fe6'),
+  (3,'Bob','Marley','5523 Fort St','Holten','KS','66695','785-332-2765','BJAMES@GMAIL.COM','1995-12-12','2367','615b3257271b98f658a5ec33cc5f20b0'),
+  (9,'Sally','Morgan','1313 Mockingbird Ln','Parks','UT','12345','785-333-1122','SCODER@YAHOO.COM','1985-03-02','1112','a94aa000f9a94cc51775bd5eac97c926'),
+  (10,'George','Grayson','45110 152st','Overland Park','KS','66001','785-340-4577','GEOG@YAHOO.COM','1995-12-15','3489','a94aa000f9a94cc51775bd5eac97c926'),
+  (11,'Bonnie','Clark','110 52st','Lenexa','KS','66661','785-340-9999','BP@YAHOO.COM','1995-12-15','3455','a94aa000f9a94cc51775bd5eac97c926'),
+  (12,'Mark','Ridel','123 Oceanside Ln','Malibu','CA','90210','202-111-2345','MRIDEL@AOL.COM','1995-02-17','1267','a94aa000f9a94cc51775bd5eac97c926'),
+  (13,'John','Law','559 South St','Pittsburg','KS','66921','785-423-2256','JLAW@FISHNET.COM','1999-06-07','4445','a94aa000f9a94cc51775bd5eac97c926');
+
