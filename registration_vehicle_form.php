@@ -5,17 +5,24 @@
 <h1>Register Vehicle</h1>
 
 <?php
-$VIN = "";
+require "./includes/dbconnect.php";
+
+$vin = "";
+$make = "";
 $model = "";
-$modelYear = "";
-$milage = "";
+$modelyear = "";
+$mileage = "";
+$newused = "";
 $new = "";
 $used = "";
-$colors = "";
+$color = "";
 $trim = "";
-$licensePlate = "";
-$vc = "";
-$cInsurance = "";
+$license_plate = "";
+$vehicle_clasification = "";
+$check_insurance = "";
+
+$flag = false;
+$lpErr = "";
 
 function clean($data){
 	$data = trim($data);
@@ -26,43 +33,79 @@ function clean($data){
 	return $data;
 }
 
-if(isset($POST['Register'])){
-	$VIN = clean($_POST['VIN']);
-	$Model = clean($_POST['Model']);
-	$ModelYear = clean($_POST['ModelYear']);
-	$Milage = clean($_POST['Milage']);
-	$NewUsed = clean($_POST['NewUsed']);
-	$Color = clean($_POST['Color']);
-	$Trim = clean($_POST['Trim']);
-	$LicensePlate = clean($_POST['LicensePlate']);
-	$VehicleClasiffication = clean($_POST['VehicleClasiffication']);
-	$CheckInsurance = clean($_POST['CheckInsurance']);
+//error handling for License plate
+function validateLP($license_plate){
+	$count = strlen($license_plate);
+	$tw = "6";
+	if($count == $tw){
+		$flag = false;
+	}else{
+		$flag = true;
+		$lpErr = "Invalid format, license plate is 6 digits";
+	}
+}
 
+if(isset($_POST['register'])){
+	$vin = clean($_POST['vin']);
+	$make = clean($_POST['make']);
+	$model = clean($_POST['model']);
+	$modelyear = clean($_POST['modelyear']);
+	$mileage = clean($_POST['mileage']);
+	$newused = clean($_POST['newused']);
+	$color = clean($_POST['color']);
+	$trim = clean($_POST['trim']);
+	$license_plate = clean($_POST['license_plate']);
+	$vehicle_clasification = clean($_POST['vehicle_clasification']);
+	$check_insurance = clean($_POST['check_insurance']);
+	
+	//error handlings are coming here 
+	
+	
 	if($flag == false){
-		print 'Your information has been submitted, thank you.';
+		//insert data
+		$sql1 = "INSERT INTO RegisterVehicle SET vin = '$vin', make = '$make', model = '$model', trim = '$trim', modelyear = '$modelyear', 
+		mileage = '$mileage', newused = '$newused', color = '$color', license_plate = '$license_plate', 
+		vehicle_clasification = '$vehicle_clasification', check_insurance = '$check_insurance';";
+	
+		if (mysqli_query($link, $sql1)){
+			print <<<END
+				<h2> Your information has been submitted, thank you.</h2>
+				<p> <button onclick = "document.location='login.inc.php'">Return to login page</button></p>
+			END;
+		}else {
+			echo "Error: " . $sql1 . "<br>" . mysqli_error($link);
+		}
+		
 	}elseif($flag == true){
 		print 	<<<END
 	
-			<div align="left" style="width:364px;">
+			<div align="left" style="width:600px;">
 			<form name = "Register Vehicle" action = "registration_vehicle_form.php" method = "post">
 			<p>
-				VIN: <input type="text" name="VIN" value="$VIN" required/>
+				VIN: <input type="text" name="vin" value="$vin" required/>
+			</p>
+			<p>
+				Make: <input type="text" name="make" value="$make" required/>
 			</p>
 			<p>
 				Model: <input type="text" name="model" value="$model" required/>
 			</p>
 			<p>
-				Model Year: <input type="number" name="modelYear" value="$modelYear" required/>
+				Trim: <input type="text" name="trim" value="$trim" required/>
 			</p>
 			<p>
-				Milage: <input type="number" name="milage" value="$milage" required/>
+				Model Year: <input type="number" name="modelyear" value="$modelyear" required/>
 			</p>
 			<p>
-				New or Used:<input type="radio" id="new" name="NewUsed" value="$new"/><label for="new">New</label> <input type="radio" id="used" name="NewUsed" value="$used"/><label for="used">Used</label>
-				
+				Mileage: <input type="number" name="mileage" value="$mileage" required/>
 			</p>
 			<p>
-				Color: <select id="colors" name="colors" required/>
+				New or Used:
+				<input type="radio" name="newused" value="new"/><label for="used">New</label> 
+				<input type="radio" name="newused" value="used"/><label for="">Used</label>
+			</p>
+			<p>
+				Color: <select id="color" name="color" required/>
 					<option value="black">black</option>
 					<option value="navy">navy</option>
 					<option value="gray">gray</option>
@@ -75,58 +118,74 @@ if(isset($POST['Register'])){
 					<option value="orange">orange</option>
 					<option value="pink">pink</option>
 					<option value="purple">purple</option>
-					<option value="other">other</option>
+					<option value="others">others</option>
+				</select>	
+			</p>
+			<p>
+				License Plate: <input type="text" name="license_plate" value="$license_plate" required/> $lpErr
+			</p>
+			<p>
+				Vehicle Classification: <select id="vc" name="vehicle_clasification" required/>
+					<option value="1:motorcycle">1:motorcycle</option>
+					<option value="2:passenger car">2:passenger car</option>
+					<option value="3:pick up, other two-axle fourtire single unit vehicles">3:pick up, other two-axle fourtire single unit vehicles</option>
+					<option value="4:two and three axle bus">4:two and three axle bus</option>
+					<option value="5:two axle, six tire, single unit truck">5:two axle, six tire, single unit truck</option>
+					<option value="6:three axle single unit truck">6:three axle single unit truck</option>
+					<option value="7:four or more axle single unit truck">7:four or more axle single unit truck</option>
+					<option value="8:four or less axle single trailer truck">8:four or less axle single trailer truck</option>
+					<option value="9:five axle single trailer truck">9:five axle single trailer truck</option>
+					<option value="10:six or more axle single trailer truck">10:six or more axle single trailer truck</option>
+					<option value="11:five or fewer axle multi trailer truck">11:five or fewer axle multi trailer truck</option>
+					<option value="12:six axle multi trailer truck">12:six axle multi trailer truck</option>
+					<option value="13:seven or more axle multi trailer truck">13:seven or more axle multi trailer truck</option>
+					<option value="14:unclassfied vehicle">14:unclassfied vehicle</option>
 				</select>
-				other colors <input type="text" name="colors">	
-
 			</p>
 			<p>
-				Trim: <input type="text" name="trim" value="$trim" required/>
-			</p>
-			<p>
-				License Plate: <input type="text" name="license plate" value="$licensePlate" required/>
-			</p>
-			<p>
-				Vehicle Classification: <input type="text" name="vehicle classification" value="$vc" required/>
-			</p>
-			<p>
-				Check Insurance: <input type="text" name="check insurance" value="$cInsurance" required/>
+				Policy Number(Insurance): <input type="text" name="check_insurance" value="$check_insurance" required/>
 			</p>
 			<p>
 				<input type="reset" name="clear" value="Clear"/.>
 				&nbsp; &nbsp;
-				<input type="submit" name="Register" value="Register"/>
+				<input type="submit" name="register" value="Register"/>
 			</p>
 			</form>
 			</div>
 			</body>
 			</html>
-	
 		END;
 	}
 }else{ 
 	print 	<<<END
 	
-			<div align="left" style="width:364px;">
+			<div align="left" style="width:600px;">
 			<form name = "Register Vehicle" action = "registration_vehicle_form.php" method = "post">
 			<p>
-				VIN: <input type="text" name="VIN" value="$VIN" required/>
+				VIN: <input type="text" name="vin" value="$vin" required/>
+			</p>
+			<p>
+				Make: <input type="text" name="make" value="$make" required/>
 			</p>
 			<p>
 				Model: <input type="text" name="model" value="$model" required/>
 			</p>
 			<p>
-				Model Year: <input type="number" name="modelYear" value="$modelYear" required/>
+				Trim: <input type="text" name="trim" value="$trim" required/>
 			</p>
 			<p>
-				Milage: <input type="number" name="milage" value="$milage" required/>
+				Model Year: <input type="number" name="modelyear" value="$modelyear" required/>
 			</p>
 			<p>
-				New or Used:<input type="radio" id="new" name="NewUsed" value="$new"/><label for="new">New</label> <input type="radio" id="used" name="NewUsed" value="$used"/><label for="used">Used</label>
-				
+				Mileage: <input type="number" name="mileage" value="$mileage" required/>
 			</p>
 			<p>
-				Color: <select id="colors" name="colors" required/>
+				New or Used:
+				<input type="radio" name="newused" value="new"/><label for="new">New</label> 
+				<input type="radio" name="newused" value="used"/><label for="used">Used</label>
+			</p>
+			<p>
+				Color: <select id="color" name="color" required/>
 					<option value="black">black</option>
 					<option value="navy">navy</option>
 					<option value="gray">gray</option>
@@ -139,35 +198,43 @@ if(isset($POST['Register'])){
 					<option value="orange">orange</option>
 					<option value="pink">pink</option>
 					<option value="purple">purple</option>
-					<option value="other">other</option>
+					<option value="others">others</option>
+				</select>	
+			</p>
+			<p>
+				License Plate: <input type="text" name="license_plate" value="$license_plate" required/>
+			</p>
+			<p>
+				Vehicle Classification: <select id="vc" name="vehicle_clasification" required/>
+					<option value="1:motorcycle">1:motorcycle</option>
+					<option value="2:passenger car">2:passenger car</option>
+					<option value="3:pick up, other two-axle fourtire single unit vehicles">3:pick up, other two-axle fourtire single unit vehicles</option>
+					<option value="4:two and three axle bus">4:two and three axle bus</option>
+					<option value="5:two axle, six tire, single unit truck">5:two axle, six tire, single unit truck</option>
+					<option value="6:three axle single unit truck">6:three axle single unit truck</option>
+					<option value="7:four or more axle single unit truck">7:four or more axle single unit truck</option>
+					<option value="8:four or less axle single trailer truck">8:four or less axle single trailer truck</option>
+					<option value="9:five axle single trailer truck">9:five axle single trailer truck</option>
+					<option value="10:six or more axle single trailer truck">10:six or more axle single trailer truck</option>
+					<option value="11:five or fewer axle multi trailer truck">11:five or fewer axle multi trailer truck</option>
+					<option value="12:six axle multi trailer truck">12:six axle multi trailer truck</option>
+					<option value="13:seven or more axle multi trailer truck">13:seven or more axle multi trailer truck</option>
+					<option value="14:unclassfied vehicle">14:unclassfied vehicle</option>
 				</select>
-				other colors <input type="text" name="colors">	
-
 			</p>
 			<p>
-				Trim: <input type="text" name="trim" value="$trim" required/>
-			</p>
-			<p>
-				License Plate: <input type="text" name="license plate" value="$licensePlate" required/>
-			</p>
-			<p>
-				Vehicle Classification: <input type="text" name="vehicle classification" value="$vc" required/>
-			</p>
-			<p>
-				Check Insurance: <input type="text" name="check insurance" value="$cInsurance" required/>
+				Policy Number(Insurance): <input type="text" name="check_insurance" value="$check_insurance" required/>
 			</p>
 			<p>
 				<input type="reset" name="clear" value="Clear"/.>
 				&nbsp; &nbsp;
-				<input type="submit" name="Register" value="Register"/>
+				<input type="submit" name="register" value="Register"/>
 			</p>
 			</form>
 			</div>
 			</body>
 			</html>
-	
 		END;
-
 }
 ?> 
 
